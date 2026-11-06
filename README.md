@@ -9,15 +9,18 @@ No build step, no dependencies, no trackers.
     .nojekyll      tells GitHub Pages to serve files verbatim (no Jekyll)
     _headers       security headers for hosts that read it (Netlify/Cloudflare)
 
-## Before publishing
+## Contact details
 
-The contact section contains a visible PLACEHOLDER box. Set the real details in
-`index.html` (search for `PLACEHOLDER`):
+The contact section links to `rstappdev@gmail.com` — a `mailto:` call to action
+plus a copy-to-clipboard button. To change the address, update both places in
+`index.html`:
 
-    contact email
-    phone or WhatsApp
-    business name / registration details
-    location
+    the .reach-mail href   (the mailto: link)
+    the .reach-copy data-copy attribute
+
+Deliberately *not* on the page, because they were never supplied: a phone or
+WhatsApp number, business name and registration details, and a location. Add
+them if you want them public.
 
 Also confirm the stack list reflects what you actually want to advertise.
 

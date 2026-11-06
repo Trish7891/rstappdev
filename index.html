@@ -109,7 +109,19 @@
   .contact{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr);gap:clamp(1.5rem,4vw,3rem);align-items:start}
   .contact h2{margin-bottom:1rem}
   .contact p{color:var(--ink-soft);max-width:var(--measure);margin:0 0 1.5rem}
-  .placeholder{background:#fdf3d8;border:1px dashed #d8b25e;border-radius:var(--r);padding:.7rem .85rem;font-family:var(--mono);font-size:.78rem;color:#6b4f12}
+  .reach{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;margin:0 0 1.35rem}
+  .reach-mail{display:inline-flex;align-items:baseline;gap:.7rem;min-height:44px;padding:.7rem 1.15rem;border:1px solid var(--ink);border-radius:var(--r);background:var(--paper);color:var(--ink);text-decoration:none;transition:background .15s ease,color .15s ease}
+  .reach-mail:hover{background:var(--ink);color:var(--paper)}
+  .reach-mail:hover .reach-label{color:var(--paper);opacity:.72}
+  .reach-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .reach-value{font-family:var(--mono);font-size:.95rem}
+  .reach-arrow{opacity:.5}
+  .reach-copy{display:inline-flex;align-items:center;min-height:44px;padding:.7rem 1.15rem;border:1px solid var(--rule);border-radius:var(--r);background:transparent;color:var(--ink-soft);font:inherit;font-size:.88rem;cursor:pointer;transition:border-color .15s ease,color .15s ease}
+  .reach-copy:hover{border-color:var(--ink);color:var(--ink)}
+  .reach-status{margin:0;font-family:var(--mono);font-size:.74rem;color:var(--muted);min-height:1.2em}
+  .send{list-style:none;margin:0;padding:0;max-width:var(--measure)}
+  .send li{position:relative;padding:.5rem 0 .5rem 1.4rem;color:var(--ink-soft);font-size:.95rem;border-bottom:1px solid var(--rule)}
+  .send li::before{content:"\2014";position:absolute;left:0;color:var(--accent)}
   .facts{list-style:none;margin:0;padding:0;font-size:.92rem}
   .facts li{display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;border-bottom:1px solid var(--rule)}
   .facts span:first-child{color:var(--muted);font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase}
@@ -285,10 +297,22 @@ No licence keys. No lock-in.</div>
       <div>
         <h2>Start a project</h2>
         <p>Tell me what the software has to do and who uses it. A few sentences is enough to begin — if the scope is unclear, the first reply will be questions rather than a quote.</p>
-        <p class="placeholder">
-          PLACEHOLDER — set before publishing:<br>
-          contact email · phone or WhatsApp · business name and registration details · location
-        </p>
+        <div class="reach">
+          <a class="reach-mail" href="mailto:rstappdev@gmail.com?subject=Project%20enquiry">
+            <span class="reach-label">Email</span>
+            <span class="reach-value">rstappdev@gmail.com</span>
+            <span class="reach-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+          <button class="reach-copy" type="button" data-copy="rstappdev@gmail.com">Copy address</button>
+        </div>
+        <p class="reach-status" id="copy-status" role="status" aria-live="polite"></p>
+
+        <ul class="send">
+          <li>What the software should do, in a few sentences</li>
+          <li>Who uses it, and roughly how many</li>
+          <li>Anything it has to talk to &mdash; a broker, a spreadsheet, an existing system</li>
+          <li>Any deadline that is fixed rather than merely preferred</li>
+        </ul>
       </div>
       <div>
         <ul class="facts">
@@ -312,6 +336,40 @@ No licence keys. No lock-in.</div>
 
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
+
+  /* Copy the contact address without a library. The Clipboard API needs a
+     secure context, so there is a textarea fallback for anything served
+     over plain http. Confirmation goes to an aria-live region. */
+  (function () {
+    var btn = document.querySelector('.reach-copy');
+    var status = document.getElementById('copy-status');
+    if (!btn || !status) return;
+    var reset;
+    function report(msg) {
+      status.textContent = msg;
+      clearTimeout(reset);
+      reset = setTimeout(function () { status.textContent = ''; }, 2500);
+    }
+    btn.addEventListener('click', function () {
+      var value = btn.getAttribute('data-copy');
+      function ok() { report('Copied ' + value); }
+      function fail() { report('Copy failed \u2014 select the address above'); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(value).then(ok, fallback);
+      } else { fallback(); }
+      function fallback() {
+        var t = document.createElement('textarea');
+        t.value = value;
+        t.setAttribute('readonly', '');
+        t.style.position = 'absolute';
+        t.style.left = '-9999px';
+        document.body.appendChild(t);
+        t.select();
+        try { document.execCommand('copy') ? ok() : fail(); } catch (e) { fail(); }
+        document.body.removeChild(t);
+      }
+    });
+  })();
 </script>
 </body>
 </html>
