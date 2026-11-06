@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rstappdev — application &amp; web development</title>
+<meta name="description" content="rstappdev builds web applications, mobile apps and trading automation. Practical software, built to be handed over.">
+<meta name="theme-color" content="#12100e">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2312100e'/><text x='50%25' y='57%25' font-family='Georgia,serif' font-size='17' fill='%23e8dcc8' text-anchor='middle' dominant-baseline='middle'>r</text></svg>">
+<style>
+  /* ---------- tokens ---------- */
+  :root{
+    --paper:#f6f3ee;
+    --paper-2:#efe9e0;
+    --ink:#14120f;
+    --ink-soft:#3c3833;
+    --muted:#6f6a62;
+    --rule:#ded6c9;
+    --accent:#b6471f;         /* rust — chosen, not defaulted */
+    --accent-ink:#8f3716;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --measure:64ch;
+    --pad:clamp(1.25rem,4vw,3rem);
+    --maxw:1120px;
+    --r:3px;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--sans);font-size:clamp(1rem,0.55vw + 0.9rem,1.075rem);
+    line-height:1.6;text-wrap:pretty;
+  }
+  a{color:var(--accent-ink);text-underline-offset:.18em}
+  a:hover{color:var(--ink)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.12;letter-spacing:-.01em;margin:0}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
+  .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 .8rem}
+
+  /* ---------- header ---------- */
+  header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--rule)}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:60px}
+  .wordmark{font-family:var(--serif);font-size:1.18rem;font-weight:600;text-decoration:none;color:var(--ink);letter-spacing:-.015em}
+  .wordmark span{color:var(--accent)}
+  nav ul{display:flex;gap:1.4rem;list-style:none;margin:0;padding:0}
+  nav a{font-family:var(--mono);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--ink-soft)}
+  nav a:hover{color:var(--accent-ink)}
+  .nav-cta{border:1px solid var(--ink);padding:.4rem .7rem;border-radius:var(--r)}
+  .nav-cta:hover{background:var(--ink);color:var(--paper)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:clamp(3rem,8vw,6rem) 0 clamp(2.5rem,5vw,4rem);border-bottom:1px solid var(--rule)}
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(2rem,5vw,4.5rem);align-items:start}
+  h1{font-size:clamp(2.1rem,5.4vw,3.55rem)}
+  h1 em{font-style:normal;color:var(--accent-ink)}
+  .lede{font-size:1.09rem;color:var(--ink-soft);max-width:var(--measure);margin:1.4rem 0 0}
+  .cta-row{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:2rem}
+  .btn{display:inline-flex;align-items:center;min-height:44px;padding:.7rem 1.15rem;border-radius:var(--r);text-decoration:none;font-size:.95rem;font-weight:500;border:1px solid var(--ink);color:var(--paper);background:var(--ink)}
+  .btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn.ghost:hover{background:var(--paper-2);color:var(--ink);border-color:var(--ink)}
+
+  /* terminal artifact — illustrative, not a claim */
+  .term{border:1px solid var(--rule);border-radius:var(--r);background:#12100e;color:#e8dcc8;overflow:hidden;font-family:var(--mono);font-size:.78rem;line-height:1.75}
+  .term-bar{display:flex;align-items:center;gap:.5rem;padding:.55rem .75rem;border-bottom:1px solid #2a2622;color:#8d857a;font-size:.7rem;letter-spacing:.06em}
+  .dot{width:8px;height:8px;border-radius:50%;background:#3a342e}
+  .term-body{padding:.9rem .95rem 1.05rem;white-space:pre-wrap}
+  .term-body b{color:#e8dcc8;font-weight:500}
+  .term-body i{color:#b6471f;font-style:normal}
+  .term-body u{color:#8d857a;text-decoration:none}
+  .term-note{padding:.5rem .95rem .8rem;color:#8d857a;font-size:.68rem}
+
+  /* ---------- sections ---------- */
+  section{padding:clamp(2.75rem,6vw,4.5rem) 0;border-bottom:1px solid var(--rule);scroll-margin-top:78px}
+  #top{scroll-margin-top:0}
+  #services,#approach,#stack,#contact{scroll-margin-top:78px}
+  .sec-head{display:grid;grid-template-columns:minmax(0,.34fr) minmax(0,1fr);gap:clamp(1rem,4vw,3rem);margin-bottom:clamp(1.75rem,4vw,3rem)}
+  h2{font-size:clamp(1.5rem,2.6vw,2.05rem)}
+  .sec-head p{margin:0;color:var(--ink-soft);max-width:var(--measure)}
+
+  /* services: two panels of unequal weight, no icons */
+  .services{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(1.25rem,3vw,2.25rem)}
+  .panel{background:var(--paper-2);border:1px solid var(--rule);border-radius:var(--r);padding:clamp(1.25rem,3vw,1.9rem)}
+  .panel.lead{background:var(--paper);border-color:var(--ink)}
+  .panel h3{font-size:1.22rem;margin-bottom:.35rem}
+  .panel .kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ink);margin:0 0 .9rem}
+  .panel p{margin:.5rem 0 1rem;color:var(--ink-soft);font-size:.96rem}
+  .panel ul{margin:0;padding-left:1.1rem;color:var(--ink-soft);font-size:.93rem}
+  .panel li{margin:.32rem 0}
+  .panel li::marker{color:var(--accent)}
+
+  /* approach: sequence, typographic not decorative */
+  .steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(1rem,2.4vw,1.75rem)}
+  .step{border-top:2px solid var(--ink);padding-top:.9rem}
+  .step .n{font-family:var(--mono);font-size:.72rem;color:var(--accent-ink);letter-spacing:.1em}
+  .step h3{font-size:1.03rem;margin:.45rem 0 .4rem}
+  .step p{margin:0;font-size:.9rem;color:var(--ink-soft)}
+
+  /* stack: plain mono text, no logo wall */
+  .stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem clamp(1.5rem,4vw,3rem)}
+  .stack dl{margin:0}
+  .stack dt{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem}
+  .stack dd{margin:0 0 1.15rem;font-family:var(--mono);font-size:.84rem;color:var(--ink-soft);line-height:1.9}
+
+  /* contact */
+  .contact{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr);gap:clamp(1.5rem,4vw,3rem);align-items:start}
+  .contact h2{margin-bottom:1rem}
+  .contact p{color:var(--ink-soft);max-width:var(--measure);margin:0 0 1.5rem}
+  .placeholder{background:#fdf3d8;border:1px dashed #d8b25e;border-radius:var(--r);padding:.7rem .85rem;font-family:var(--mono);font-size:.78rem;color:#6b4f12}
+  .facts{list-style:none;margin:0;padding:0;font-size:.92rem}
+  .facts li{display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;border-bottom:1px solid var(--rule)}
+  .facts span:first-child{color:var(--muted);font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase}
+
+  footer{padding:2rem 0 3rem;color:var(--muted);font-size:.85rem}
+  .foot{display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;justify-content:space-between;align-items:baseline}
+
+  @media (max-width:900px){
+    .hero-grid,.sec-head,.services,.contact{grid-template-columns:1fr}
+    .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .sec-head{margin-bottom:1.5rem}
+  }
+  @media (max-width:560px){
+    .steps,.stack{grid-template-columns:1fr}
+    nav a{font-size:.68rem}
+  }
+  /* On narrow screens the four nav items plus the CTA cannot fit: keep the CTA
+     and drop the section links, since the page is short and scrollable. */
+  @media (max-width:640px){
+    nav ul li:not(:last-child){display:none}
+    .bar{padding-block:.35rem}
+    .wordmark{font-size:1.05rem}
+    nav a{font-size:.72rem;letter-spacing:.06em}
+    .nav-cta{padding:.45rem .6rem;white-space:nowrap}
+    .term{font-size:.68rem}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="wordmark" href="#top">rst<span>app</span>dev</a>
+    <nav aria-label="Primary">
+      <ul>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#approach">Approach</a></li>
+        <li><a href="#stack">Stack</a></li>
+        <li><a class="nav-cta" href="#contact">Start a project</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Application &amp; web development</p>
+        <h1>Software that does a job, <em>then gets out of the way.</em></h1>
+        <p class="lede">
+          rstappdev builds web applications, Android apps and trading automation —
+          with the testing, documentation and source handover that make a system
+          something you own rather than rent.
+        </p>
+        <div class="cta-row">
+          <a class="btn" href="#contact">Start a project</a>
+          <a class="btn ghost" href="#services">What I build</a>
+        </div>
+      </div>
+
+      <figure class="term" aria-label="Illustrative build and handover log">
+        <div class="term-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span style="margin-left:.4rem">build — zsh</span></div>
+        <div class="term-body"><u>$</u> rstappdev build --scope app,web
+<u>›</u> spec agreed ......................... <i>done</i>
+<u>›</u> tests written before code ........... <i>done</i>
+<u>›</u> backtest on broker history .......... <i>done</i>
+<u>›</u> signed release artefact ............. <i>done</i>
+<u>›</u> source + docs handed over ........... <i>done</i>
+
+<b>You own the repository.</b>
+No licence keys. No lock-in.</div>
+        <div class="term-note">Illustration of the delivery process.</div>
+      </figure>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Services</h2>
+        <p>Two things, done properly. Applications are the deeper engagement; web work is usually faster and narrower. Both end with working software and the code in your hands.</p>
+      </div>
+
+      <div class="services">
+        <article class="panel lead">
+          <p class="kicker">Applications</p>
+          <h3>Desktop, mobile and automation</h3>
+          <p>Purpose-built tools where the logic matters more than the surface — trading systems, data pipelines, internal tools, Android apps.</p>
+          <ul>
+            <li>Trading automation on MetaTrader 5 — expert advisors, indicators, risk controls built to prop-firm rules</li>
+            <li>Backtesting and strategy validation on real broker history, with spread and slippage costed in</li>
+            <li>Android applications, built and signed to a release artefact</li>
+            <li>Python automation, data collection and reporting pipelines</li>
+            <li>AI agent integration — tool calling, scheduling, supervised autonomy</li>
+          </ul>
+        </article>
+
+        <article class="panel">
+          <p class="kicker">Web</p>
+          <h3>Sites and web applications</h3>
+          <p>From a single fast landing page to a data-backed web app. No page builders, no bloated themes.</p>
+          <ul>
+            <li>Marketing sites and landing pages, built to load quickly on a phone</li>
+            <li>Web applications with real state, forms and persistence</li>
+            <li>Dashboards for data you already have</li>
+            <li>Performance, accessibility and responsive passes on existing sites</li>
+            <li>Static-first hosting so running costs stay near zero</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="approach">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>How the work runs</h2>
+        <p>Four steps, in this order, every time. The point of the sequence is that you always know what is being built and why.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <p class="n">01</p>
+          <h3>Scope in writing</h3>
+          <p>What the system must do, what it must not do, and how we will both know it works. Ambiguity gets resolved here, not mid-build.</p>
+        </div>
+        <div class="step">
+          <p class="n">02</p>
+          <h3>Build in the open</h3>
+          <p>Progress you can look at, tests written alongside the code, and numbers reported honestly — including the ones that look bad.</p>
+        </div>
+        <div class="step">
+          <p class="n">03</p>
+          <h3>Handover</h3>
+          <p>Source code, a written handover guide and a walkthrough. You end up able to run and change it without me.</p>
+        </div>
+        <div class="step">
+          <p class="n">04</p>
+          <h3>Support that ends</h3>
+          <p>A short support window after delivery. After that, changes are a new piece of work rather than a standing subscription.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="stack">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>What I work in</h2>
+        <p>Chosen because it fits the job, not because it is fashionable. Platforms are listed plainly so you can judge the fit before we talk.</p>
+      </div>
+      <div class="stack">
+        <dl>
+          <dt>Applications</dt>
+          <dd>Python · MQL5 / MetaTrader 5 · Kotlin · Android SDK · Java</dd>
+          <dt>Web</dt>
+          <dd>HTML · CSS · JavaScript · static hosting · API integration</dd>
+        </dl>
+        <dl>
+          <dt>Data &amp; automation</dt>
+          <dd>SQLite · REST APIs · scheduled jobs · backtesting harnesses</dd>
+          <dt>AI &amp; tooling</dt>
+          <dd>LLM agent orchestration · MCP tool servers · Linux / WSL · Git</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap contact">
+      <div>
+        <h2>Start a project</h2>
+        <p>Tell me what the software has to do and who uses it. A few sentences is enough to begin — if the scope is unclear, the first reply will be questions rather than a quote.</p>
+        <p class="placeholder">
+          PLACEHOLDER — set before publishing:<br>
+          contact email · phone or WhatsApp · business name and registration details · location
+        </p>
+      </div>
+      <div>
+        <ul class="facts">
+          <li><span>Response</span><span>Within one working day</span></li>
+          <li><span>Engagements</span><span>Fixed-scope projects</span></li>
+          <li><span>Handover</span><span>Source code included</span></li>
+          <li><span>Timezone</span><span>SAST (UTC+2)</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>rstappdev — application &amp; web development</span>
+    <span>&copy; <span id="yr">2026</span> rstappdev</span>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
