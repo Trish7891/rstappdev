@@ -1,4 +1,11 @@
 /*
-  Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'unsafe-inline' 'self'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline' 'self'; img-src 'self' data:; base-uri 'none'; form-action 'mailto:'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+
+# Notes
+# - script-src needs 'unsafe-inline' because index.html sets the footer year with
+#   one small inline script. Remove that script and this allowance can go too.
+# - GitHub Pages IGNORES this file entirely; Netlify and Cloudflare Pages honour it.
+# - form-action is 'mailto:' only. Widen it if you add a hosted form later.
